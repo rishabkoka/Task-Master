@@ -52,15 +52,20 @@ def delete(id):
 
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
 def update(id):
-    task_to_update = Todo.query.get_or_404(id)
+    task = Todo.query.get_or_404(id)
 
-    try:
-        db.session.delete(task_to_delete)
-        db.session.commit()
-        return redirect('/')
+    if request.method == 'POST':
+        task.content = request.form['content']
 
-    except:
-        return 'There was a problem deleting the task from the list'
+        try:
+            db.session.commit()
+            return redirect('/')
+
+        except:
+            return 'There was a problem Updating the task'
+
+    else:
+        return render_template('update.html', task = task)
 
 
 if __name__ == "__main__":
