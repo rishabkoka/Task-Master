@@ -14,12 +14,21 @@
         <tr>
             <th>Task</th>
             <th>Added</th>
+            <th>Status</th>
             <th>Actions</th>
         </tr>
         {% for task in tasks %}
             <tr>
                 <td>{{ task.content }}</td>
                 <td>{{ task.date_created.date() }}</td>
+                <td>
+                    <form>
+                        <select id="Status" name="Status">
+                        <option id="NotStarted" value="NotStarted">Not Started</option>
+                        <option id="InProgress" value="InProgress">In Progress</option>
+                        <option id="Complete" value="Complete">Complete</option>
+                    </form>
+                </td>
                 <td>
                     <a href="/delete/{{ task.id }}">Delete</a>
                     <br>
