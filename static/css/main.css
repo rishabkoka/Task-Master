@@ -8,7 +8,7 @@ body, html {
 .content {
     text-align: center;
     margin: 0 auto;
-    width: 400px;
+    width: auto;
 }
 
 table, td, th {
@@ -29,14 +29,33 @@ td {
     padding: 5px;
 }
 
+.StatusDropDown {
+    border: none;
+}
+
+select option:nth-child(1) { 
+    display: none; 
+}
+
 .select {
     width: 100%;
     padding: 16px 20px;
     border: none;
     border-radius: 4px;
-    background-color: #f1f1f1;
 }
-  
+
+.NotStarted { 
+    background-color:red; 
+}
+
+.InProgress {
+    background-color: yellow;
+}
+
+.Complete {
+    background-color: green;
+}
+
 
 .form {
     margin-top: 20px;

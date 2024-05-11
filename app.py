@@ -15,6 +15,9 @@ class Todo(db.Model):
     content = db.Column(db.String(200), nullable=False)
     completed = db.Column(db.Integer, default=0)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    due_date = db.Column(db.String(200), nullable=False)
+    status = db.Column(db.String(200), default="Not Started")
+
 
     def __repr__(self):
         return '<Task %r>' % self.id
@@ -24,7 +27,10 @@ class Todo(db.Model):
 def index():
     if request.method == 'POST':
         task_content = request.form['content']
-        new_task = Todo(content=task_content)
+        task_due_date = request.form['DueDate']
+        #print("date =" + task_due_date)
+        new_task = Todo(content=task_content, due_date=task_due_date)
+        #new_task = Todo(content=task_content)
 
         try:
             db.session.add(new_task)
@@ -56,6 +62,9 @@ def update(id):
 
     if request.method == 'POST':
         task.content = request.form['content']
+        task.due_date = request.form['DueDate']
+        task.status = request.form['Status']
+
 
         try:
             db.session.commit()

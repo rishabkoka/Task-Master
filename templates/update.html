@@ -9,7 +9,14 @@
     <h1>Update Task</h1>
 
     <form action="/update/{{ task.id }}" method="POST">
-        <input type="text" name="content" id="content" value="{{task.content}}">
+        <input type="text" name="content" id="content" value="{{ task.content }}">
+        <input type="date" name="DueDate" id="DueDate" value="{{ task.due_date }}">
+        <select id="Status" name="Status">
+        <option value="{{ task.status }}">{{ task.status }}</option>
+        <option class="NotStarted" value="Not Started">Not Started</option>
+        <option class="InProgress" value="In Progress">In Progress</option>
+        <option class="Complete" value="Complete">Complete</option>
+        <br>
         <input type="submit" value="Update">
     </form>
 </div>

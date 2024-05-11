@@ -14,6 +14,7 @@
         <tr>
             <th>Task</th>
             <th>Added</th>
+            <th>Due Date</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
@@ -21,14 +22,8 @@
             <tr>
                 <td>{{ task.content }}</td>
                 <td>{{ task.date_created.date() }}</td>
-                <td>
-                    <form>
-                        <select id="Status" name="Status">
-                        <option id="NotStarted" value="NotStarted">Not Started</option>
-                        <option id="InProgress" value="InProgress">In Progress</option>
-                        <option id="Complete" value="Complete">Complete</option>
-                    </form>
-                </td>
+                <td>{{ task.due_date }}</td>
+                <td>{{ task.status }}</td>
                 <td>
                     <a href="/delete/{{ task.id }}">Delete</a>
                     <br>
@@ -41,6 +36,7 @@
     <br>
     <form action="/" method="POST">
         <input type="text" name="content" id="content">
+        <input type="date" name="DueDate" id="DueDate">
         <input type="submit" value="Add Task">
     </form>
 </div>
