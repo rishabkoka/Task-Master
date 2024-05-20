@@ -6,6 +6,16 @@ from datetime import datetime
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todolist.db'
 
+
+#To Run the enviroment
+# source env/Scripts/activate 
+# flask shell
+#>>> from app import db
+#>>> db.create_all()
+#>>> exit()
+#python app.py
+
+
 #Database is intialized using the app settings
 db = SQLAlchemy(app)
 
