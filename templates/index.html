@@ -7,8 +7,35 @@
 {% block body %}
 <div class="content">
     <h1>Task Master</h1>
+
+    <!-- Sorting and Filtering Options -->
+    <form method="get" action="/">
+        <!-- Sorting Dropdown -->
+        <label for="sort">Sort by:</label>
+        <select name="sort" id="sort">
+            <option value="date_created" {% if sort_option == 'date_created' or not sort_option %}selected{% endif %}>Date Added</option>
+            <option value="date_created" {% if sort_option == 'date_created' %}selected{% endif %}>Date Added</option>
+            <option value="due_date" {% if sort_option == 'due_date' %}selected{% endif %}>Due Date</option>
+            <option value="status" {% if sort_option == 'status' %}selected{% endif %}>Status</option>
+        </select>
+    
+        <!-- Filtering Dropdown -->
+        <label for="filter">Filter by:</label>
+        <select name="filter" id="filter">
+            <option value="all" {% if filter_option == 'all' or not filter_option %}selected{% endif %}>All Tasks</option>
+            <option value="all" {% if filter_option == 'all' %}selected{% endif %}>All Tasks</option>
+            <option value="upcoming" {% if filter_option == 'upcoming' %}selected{% endif %}>Tasks Due in 7 Days</option>
+            <option value="completed" {% if filter_option == 'completed' %}selected{% endif %}>Completed Tasks</option>
+            <option value="not_started" {% if filter_option == 'not_started' %}selected{% endif %}>Not Started Tasks</option>
+            <option value="in_progress" {% if filter_option == 'in_progress' %}selected{% endif %}>In Progress Tasks</option>
+        </select>
+    
+        <button type="submit">Apply</button>
+    </form>    
+    <br>
+
     {% if tasks|length < 1 %}
-    <h4>All Tasks Are Complete!</h4>
+    <h4>No tasks available based on your filters!</h4>
     {% else %}
     <table>
         <tr>
@@ -34,11 +61,17 @@
     </table>
     {% endif %}
     <br>
+
+    <!-- Form to Add Tasks -->
     <form action="/" method="POST">
-        <input type="text" name="content" id="content">
-        <input type="date" name="DueDate" id="DueDate">
+        <input type="text" name="content" id="content" placeholder="Task Description" required>
+        <input type="date" name="DueDate" id="DueDate" required>
         <input type="submit" value="Add Task">
     </form>
+
+    <form action="/add_daily_leetcode" method="POST">
+        <button type="submit">Add Daily LeetCode Task</button>
+    </form>
+    
 </div>
 {% endblock %}
-

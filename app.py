@@ -1,90 +1,114 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-
+from sqlalchemy.sql import text
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todolist.db'
-
-
-#To Run the enviroment
-# source env/Scripts/activate 
-# flask shell
-#>>> from app import db
-#>>> db.create_all()
-#>>> exit()
-#python app.py
-
-
-#Database is intialized using the app settings
 db = SQLAlchemy(app)
 
-#Defining the todo model for the database
+# Defining the todo model
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
-    completed = db.Column(db.Integer, default=0)
+    # completed = db.Column(db.Integer, default=0)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     due_date = db.Column(db.String(200), nullable=False)
     status = db.Column(db.String(200), default="Not Started")
 
-
     def __repr__(self):
         return '<Task %r>' % self.id
 
-#Setting up route of just the URL
+# Route for sorting and filtering
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         task_content = request.form['content']
         task_due_date = request.form['DueDate']
-        #print("date =" + task_due_date)
         new_task = Todo(content=task_content, due_date=task_due_date)
-        #new_task = Todo(content=task_content)
-
         try:
             db.session.add(new_task)
             db.session.commit()
             return redirect('/')
         except:
             return "There was an issue adding your task"
+    
+    # Ensure sort_option and filter_option are always assigned
+    sort_option = request.args.get('sort', 'date_created')
+    filter_option = request.args.get('filter', 'all')
 
-    else:
-        tasks = Todo.query.order_by(Todo.date_created).all()
-        return render_template('index.html', tasks = tasks)
+    valid_sort_fields = {
+        'date_created': Todo.date_created,
+        'due_date': Todo.due_date,
+        'status': Todo.status
+    }
+    sort_field = valid_sort_fields.get(sort_option, Todo.date_created)
+
+    # Filtering Logic
+    today = datetime.now().date()
+    upcoming_date = today + timedelta(days=7)
+
+    query = Todo.query
+    if filter_option == 'upcoming':
+        query = query.filter(
+            db.func.date(Todo.due_date) <= upcoming_date,
+            db.func.date(Todo.due_date) >= today
+        )
+    elif filter_option == 'completed':
+        query = query.filter(Todo.status == 'Complete')
+    elif filter_option == 'not_started':
+        query = query.filter(Todo.status == 'Not Started')
+    elif filter_option == 'in_progress':
+        query = query.filter(Todo.status == 'In Progress')
+
+    tasks = query.order_by(sort_field).all()
+
+    return render_template('index.html', tasks=tasks, sort_option=sort_option, filter_option=filter_option)
 
 
+# Delete Route
 @app.route('/delete/<int:id>')
 def delete(id):
-    task_to_delete = Todo.query.get_or_404(id)
-
+    # task_to_delete = Todo.query.get_or_404(id)
     try:
-        db.session.delete(task_to_delete)
+        db.session.execute(
+            text("DELETE FROM todo WHERE id = :id"),
+            {"id": id}
+        )
         db.session.commit()
         return redirect('/')
-
     except:
-        return 'There was a problem deleting the task from the list'
+        return 'There was a problem deleting the task'
 
+# Update Route
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
 def update(id):
     task = Todo.query.get_or_404(id)
-
     if request.method == 'POST':
         task.content = request.form['content']
         task.due_date = request.form['DueDate']
         task.status = request.form['Status']
-
-
         try:
             db.session.commit()
             return redirect('/')
-
         except:
-            return 'There was a problem Updating the task'
+            return 'There was a problem updating the task'
+    return render_template('update.html', task=task)
 
-    else:
-        return render_template('update.html', task = task)
+
+@app.route('/add_daily_leetcode', methods=['POST'])
+def add_daily_leetcode():
+    try:
+        db.session.execute(
+            text("""
+                INSERT INTO todo (content, date_created, due_date, status)
+                VALUES ('Daily LeetCode', CURRENT_TIMESTAMP, CURRENT_DATE, 'Not Started')
+            """)
+        )
+        db.session.commit()
+        return redirect('/')
+    except Exception as e:
+        return f"There was an issue adding the Daily LeetCode task: {str(e)}"
 
 
 if __name__ == "__main__":
