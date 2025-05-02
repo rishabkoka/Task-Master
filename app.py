@@ -10,11 +10,11 @@ db = SQLAlchemy(app)
 # Defining the todo model
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.String(200), nullable=False, index=True)
     # completed = db.Column(db.Integer, default=0)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
-    due_date = db.Column(db.String(200), nullable=False)
-    status = db.Column(db.String(200), default="Not Started")
+    due_date = db.Column(db.String(200), nullable=False, index=True)
+    status = db.Column(db.String(200), default="Not Started", index=True)
 
     def __repr__(self):
         return '<Task %r>' % self.id
