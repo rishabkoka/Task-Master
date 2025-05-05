@@ -19,7 +19,7 @@ class Todo(db.Model):
     def __repr__(self):
         return '<Task %r>' % self.id
 
-# Route for sorting and filtering
+# Route for sorting and filtering (ORM Method)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -66,7 +66,7 @@ def index():
     return render_template('index.html', tasks=tasks, sort_option=sort_option, filter_option=filter_option)
 
 
-# Delete Route
+# Delete Route (Prepared Statement Method)
 @app.route('/delete/<int:id>')
 def delete(id):
     # task_to_delete = Todo.query.get_or_404(id)
@@ -80,7 +80,7 @@ def delete(id):
     except:
         return 'There was a problem deleting the task'
 
-# Update Route
+# Update Route (ORM Method)
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
 def update(id):
     task = Todo.query.get_or_404(id)
@@ -96,6 +96,7 @@ def update(id):
     return render_template('update.html', task=task)
 
 
+# Daily Leetcode Button (Prepared Statement Method)
 @app.route('/add_daily_leetcode', methods=['POST'])
 def add_daily_leetcode():
     try:
